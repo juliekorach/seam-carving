@@ -112,9 +112,9 @@ long clamp(long val, long max)
 double convol3x3(const GrayImage &gray, const Kernel &kernel)
 {
     double val(0);
-    for (int i(0); i < kernel.size(); ++i)
+    for (size_t i(0); i < kernel.size(); ++i)
     {
-        for (int j(0); j < kernel[0].size(); ++j)
+        for (size_t j(0); j < kernel[0].size(); ++j)
         {
             val = val + kernel[i][j] * gray[i][j];
         }
@@ -128,10 +128,10 @@ GrayImage subimage(const GrayImage &gray, int x, int y)
     vector<double> line;
     long max_i(gray.size());
     long max_j(gray[0].size());
-    for (int i(x - 1); i <= x + 1; ++i)
+    for (int i(y - 1); i <= y + 1; ++i)
     {
         line.clear();
-        for (int j(y - 1); j <= y + 1; ++j)
+        for (int j(x - 1); j <= x + 1; ++j)
         {
             line.push_back(gray[clamp(i, max_i)][clamp(j, max_j)]);
         }
@@ -164,28 +164,48 @@ GrayImage filter(const GrayImage &gray, const Kernel &kernel)
 // Smooth a single-channel image
 GrayImage smooth(const GrayImage &gray)
 {
-    return {}; // TODO MODIFY AND COMPLETE
+    vector<vector<double>> kernelsmooth = {{1 / 10, 1 / 10, 1 / 10},
+                                           {1 / 10, 2 / 10, 1 / 10},
+                                           {1 / 10, 1 / 10, 1 / 10}};
+    return filter(gray, kernelsmooth);
 }
 
 // Compute horizontal Sobel filter
 
 GrayImage sobelX(const GrayImage &gray)
 {
-    return {}; // TODO MODIFY AND COMPLETE
+    vector<vector<double>> kernelsobelx = {{-1.0, 0.0, 1.0},
+                                           {-2.0, 0.0, 2.0},
+                                           {-1.0, 0.0, 1.0}};
+    return filter(gray, kernelsobelx);
 }
 
 // Compute vertical Sobel filter
 
 GrayImage sobelY(const GrayImage &gray)
 {
-    return {}; // TODO MODIFY AND COMPLETE
+    vector<vector<double>> kernelsobely = {{-1.0, -2.0, -1.0},
+                                           {0.0, 0.0, 0.0},
+                                           {1.0, 2.0, 1.0}};
+    return filter(gray, kernelsobely);
 }
 
 // Compute the magnitude of combined Sobel filters
 
 GrayImage sobel(const GrayImage &gray)
 {
-    return {}; // TODO MODIFY AND COMPLETE
+    GrayImage imgx = sobelX(gray);
+    GrayImage imgy = sobelY(gray);
+    vector<double> empty_line(gray[0].size(), 0);
+    GrayImage mag(gray.size(), empty_line);
+    for (size_t i(0); i < gray.size(); ++i)
+    {
+        for (size_t j(0); j < gray[0].size(); ++j)
+        {
+            mag[i][j] = sqrt(pow(imgx[i][j], 2) + pow(imgy[i][j], 2));
+        }
+    }
+    return mag;
 }
 
 // ************************************
