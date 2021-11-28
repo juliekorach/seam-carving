@@ -34,6 +34,11 @@
 seam.exe
 main.exe
 main
+seam
+unit_test
+helper
 helper.exe
 helper
 seam
+*.png
+*.exe
