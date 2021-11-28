@@ -2,7 +2,7 @@
 //  main.cpp
 //  SeamCarving
 //
-//  Created by Barbara Jobstmann on 15.06.21.
+//  Created by Julie Korach on 15.06.21.
 //
 //
 
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
     // // Uncomment for testing different phases:
     // test_to_gray(in_path);
-    // test_smooth(in_path);
+    test_smooth(in_path);
     // test_sobel(in_path);
     // int num_seam(10); /* high value will slow things down */
     // test_hightlight_seam(in_path, num_seam);
