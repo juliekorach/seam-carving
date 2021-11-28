@@ -291,7 +291,7 @@ void test_to_gray_5_5()
     GrayImage gray_image(to_gray(rgb_image));
     check_equal(expected, gray_image);
 }
-void test_to_gray_5_5()
+void test_to_rgb_1()
 {
     // Randomly generated:
     GrayImage gray_image({{{0.730719, 0.295425}, 
