@@ -1,4 +1,5 @@
 #include <cassert>
+#include <iostream>
 #include <limits>
 #include <tgmath.h>
 #include <vector>
@@ -106,10 +107,15 @@ long clamp(long val, long max)
     {
         val = max;
     }
+    else
+    {
+        val = val;
+    }
+
     return val;
 }
 
-double convol3x3(const GrayImage &gray, const Kernel &kernel)
+double convol(const GrayImage &gray, const Kernel &kernel)
 {
     double val(0);
     for (size_t i(0); i < kernel.size(); ++i)
@@ -122,16 +128,16 @@ double convol3x3(const GrayImage &gray, const Kernel &kernel)
     return val;
 }
 
-GrayImage subimage(const GrayImage &gray, int x, int y)
+GrayImage subimage(const GrayImage &gray, long x, long y)
 {
     GrayImage img;
     vector<double> line;
-    long max_i(gray.size());
-    long max_j(gray[0].size());
-    for (int i(y - 1); i <= y + 1; ++i)
+    long max_i(gray.size()-1);
+    long max_j(gray[0].size()-1);
+    for (long i(y - 1); i <= y + 1; ++i)
     {
         line.clear();
-        for (int j(x - 1); j <= x + 1; ++j)
+        for (long j(x - 1); j <= x + 1; ++j)
         {
             line.push_back(gray[clamp(i, max_i)][clamp(j, max_j)]);
         }
@@ -149,10 +155,10 @@ GrayImage filter(const GrayImage &gray, const Kernel &kernel)
     for (long i(0); i < max_i; ++i)
     {
         line.clear();
-        for (long j(0); j < max_j; ++i)
+        for (long j(0); j < max_j; ++j)
         {
-            GrayImage imageounette = subimage(gray, i, j);
-            double val = convol3x3(imageounette, kernel);
+            GrayImage imageounette = subimage(gray, j, i);
+            double val = convol(imageounette, kernel);
 
             line.push_back(val);
         }
@@ -164,9 +170,9 @@ GrayImage filter(const GrayImage &gray, const Kernel &kernel)
 // Smooth a single-channel image
 GrayImage smooth(const GrayImage &gray)
 {
-    vector<vector<double>> kernelsmooth = {{1 / 10, 1 / 10, 1 / 10},
-                                           {1 / 10, 2 / 10, 1 / 10},
-                                           {1 / 10, 1 / 10, 1 / 10}};
+    vector<vector<double>> kernelsmooth = {{0.1, 0.1, 0.1},
+                                           {0.1, 0.2, 0.1},
+                                           {0.1, 0.1, 0.1}};
     return filter(gray, kernelsmooth);
 }
 
