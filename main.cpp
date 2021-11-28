@@ -67,8 +67,11 @@ void test_smooth(std::string const &in_path)
     if (!image.empty())
     {
         GrayImage gray_image(to_gray(image));
+        std::cout << "Gray image calculated, smoothing it" << std::endl;
         GrayImage smoothed_image(smooth(gray_image));
+        std::cout << "Smooth image calculated, sabing it" << std::endl;
         write_image(to_RGB(smoothed_image), "test_smoothed.png");
+        std::cout << "Smooth image test_smoothed.png saved" << std::endl;
     }
 };
 

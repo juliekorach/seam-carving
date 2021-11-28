@@ -22,7 +22,8 @@ RGBImage read_image(std::string name)
 {
     int width, height, bpp;
 
-    if (!exists(name)) {
+    if (!exists(name))
+    {
         std::cout << "Error: File " << name << " does not exist." << std::endl;
         return std::vector<std::vector<int>>();
     }
@@ -33,18 +34,24 @@ RGBImage read_image(std::string name)
     std::vector<std::vector<int>> image = std::vector<std::vector<int>>(height, std::vector<int>(width));
 
     uint8_t *iterator = rgb_image;
-    for (size_t i(0); i < height; ++i) {
-        for (size_t j(0); j < width; ++j) {
+    for (size_t i(0); i < height; ++i)
+    {
+        for (size_t j(0); j < width; ++j)
+        {
             int rgb = 0;
-            for (int c(CHANNEL_NUM - 1); c >= 0; --c) {
+            for (int c(CHANNEL_NUM - 1); c >= 0; --c)
+            {
                 int value = (int)*iterator;
                 rgb = rgb + (value << (8 * c));
                 iterator++;
             }
             image[i][j] = rgb;
         }
+        std::cout << ".";
     }
+    std::cout << std::endl;
     stbi_image_free(rgb_image);
+    std::cout << "Done !" << std::endl;
     return image;
 }
 
@@ -62,10 +69,13 @@ void write_image(const RGBImage &image, std::string name)
     rgb_image = (uint8_t *)malloc(width * height * CHANNEL_NUM);
 
     uint8_t *iterator = rgb_image;
-    for (size_t i(0); i < height; ++i) {
-        for (size_t j(0); j < width; ++j) {
+    for (size_t i(0); i < height; ++i)
+    {
+        for (size_t j(0); j < width; ++j)
+        {
             int rgb = image[i][j];
-            for (int c(CHANNEL_NUM - 1); c >= 0; --c) {
+            for (int c(CHANNEL_NUM - 1); c >= 0; --c)
+            {
                 int value = (rgb >> (8 * c)) & 0xFF;
                 *iterator = value;
                 iterator++;
