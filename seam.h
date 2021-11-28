@@ -41,3 +41,5 @@ GrayImage highlight_seam(const GrayImage &gray, const Path &seam);
 RGBImage highlight_seam(const RGBImage &image, const Path &seam);
 GrayImage remove_seam(const GrayImage &energy, const Path &seam);
 RGBImage remove_seam(const RGBImage &image, const Path &seam);
+
+GrayImage subimage(const GrayImage &gray, long x, long y);
