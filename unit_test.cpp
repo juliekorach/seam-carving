@@ -575,11 +575,13 @@ void test_subimage()
 
     GrayImage computed_img;
     GrayImage expected_img;
+
+    print_header("test_subimage");
     // Top right corner
     computed_img = subimage(gray, 0, 0);
     expected_img = {{0.0, 0.0, 0.1},
-                    {0.5, 0.5, 0.3},
-                    {0.8, 0.8, 0.7}};
+                    {0.0, 0.0, 0.1},
+                    {0.5, 0.5, 0.3}};
     check_equal(computed_img, expected_img);
 
     computed_img = subimage(gray, 2, 2);
