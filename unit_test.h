@@ -76,3 +76,5 @@ void test_shortest_path_2();
 void test_find_seam_1();
 
 void run_unit_tests();
+
+void test_subimage();

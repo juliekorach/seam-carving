@@ -550,6 +550,7 @@ void run_unit_tests()
     test_to_gray_3_3();
     test_to_gray_4_4();
     test_to_gray_5_5();
+    test_subimage();
     //test_sobelX_1();
     //test_sobelX_2();
     //test_sobelX_3();
@@ -563,4 +564,33 @@ void run_unit_tests()
     //test_shortest_path_1();
     //test_shortest_path_2();
     //test_find_seam_1();
+}
+
+void test_subimage()
+{
+    GrayImage gray = {{0.0, 0.1, 0.2, 0.3},
+                      {0.5, 0.3, 0.4, 0.3},
+                      {0.8, 0.7, 0.6, 1.0},
+                      {0.9, 0.91, 0.92, 0.3}};
+
+    GrayImage computed_img;
+    GrayImage expected_img;
+    // Top right corner
+    computed_img = subimage(gray, 0, 0);
+    expected_img = {{0.0, 0.0, 0.1},
+                    {0.5, 0.5, 0.3},
+                    {0.8, 0.8, 0.7}};
+    check_equal(computed_img, expected_img);
+
+    computed_img = subimage(gray, 2, 2);
+    expected_img = {{0.3, 0.4, 0.3},
+                    {0.7, 0.6, 1.0},
+                    {0.91, 0.92, 0.3}};
+    check_equal(computed_img, expected_img);
+
+    computed_img = subimage(gray, 3, 3);
+    expected_img = {{0.6, 1.0, 1.0},
+                    {0.92, 0.3, 0.3},
+                    {0.92, 0.3, 0.3}};
+    check_equal(computed_img, expected_img);
 }
