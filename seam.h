@@ -43,3 +43,4 @@ GrayImage remove_seam(const GrayImage &energy, const Path &seam);
 RGBImage remove_seam(const RGBImage &image, const Path &seam);
 
 GrayImage subimage(const GrayImage &gray, long x, long y, int a, int b);
+GrayImage superimage(const GrayImage &gray, int margin_x, int margin_y);

@@ -128,14 +128,47 @@ double convol(const GrayImage &gray, const Kernel &kernel)
     return val;
 }
 
+
+double convol_new(const GrayImage &gray, int x, int y, const Kernel &kernel)
+{
+    double val(0);
+    for (size_t i(0); i < kernel.size(); ++i)
+    {
+        for (size_t j(0); j < kernel[0].size(); ++j)
+        {
+            val = val + kernel[i][j] * gray[i+x-1][j+y-1];
+        }
+    }
+    return val;
+}
+// Builds a GrayImage with extra margin clamped pixels around the image
+
+GrayImage superimage(const GrayImage &gray, int margin_y, int margin_x)
+{
+    GrayImage img;
+    vector<double> line;
+    long max_i(gray.size());
+    long max_j(gray[0].size());
+    for (long i(-margin_x); i < max_i + margin_x; ++i)
+    {
+        line.clear();
+        for (long j(-margin_y); j < max_j + margin_y; ++j)
+        {
+            line.push_back(gray[clamp(i, max_i-1)][clamp(j, max_j-1)]);
+        }
+        img.push_back(line);
+    }
+    return img;
+}
+
 GrayImage subimage(const GrayImage &gray, long x, long y, int a, int b)
 {
     GrayImage img;
     vector<double> line;
-    long max_i(gray.size()-1);
-    long max_j(gray[0].size()-1);
-    long shiftx((a-1)/2);
-    long shifty((b-1)/2);
+    long max_i(gray.size() - 1);
+    long max_j(gray[0].size() - 1);
+    long shiftx((a - 1) / 2);
+    long shifty((b - 1) / 2);
     for (long i(y - shifty); i <= y + shifty; ++i)
     {
         line.clear();
@@ -148,13 +181,13 @@ GrayImage subimage(const GrayImage &gray, long x, long y, int a, int b)
     return img;
 }
 // Convolve a single-channel image with the given kernel.
-GrayImage filter(const GrayImage &gray, const Kernel &kernel)
+GrayImage filter_old(const GrayImage &gray, const Kernel &kernel)
 {
     GrayImage filtered;
     vector<double> line;
     long max_i(gray.size());
     long max_j(gray[0].size());
-    
+
     for (long i(0); i < max_i; ++i)
     {
         line.clear();
@@ -163,6 +196,30 @@ GrayImage filter(const GrayImage &gray, const Kernel &kernel)
             GrayImage smallimage = subimage(gray, j, i, kernel.size(), kernel[0].size());
             double val = convol(smallimage, kernel);
 
+            line.push_back(val);
+        }
+        filtered.push_back(line);
+    }
+    return filtered;
+}
+
+// Convolve a single-channel image with the given kernel.
+GrayImage filter(const GrayImage &gray, const Kernel &kernel)
+{
+    GrayImage filtered;
+    vector<double> line;
+    long max_i(gray.size());
+    long max_j(gray[0].size());
+    int margin_x((kernel.size() - 1) / 2);
+    int margin_y((kernel[0].size() - 1) / 2);
+
+    GrayImage superimg = superimage(gray, margin_x, margin_y);
+    for (long i(0); i < max_i; ++i)
+    {
+        line.clear();
+        for (long j(0); j < max_j; ++j)
+        {
+            double val = convol_new(superimg, i + margin_y, j + margin_x, kernel);
             line.push_back(val);
         }
         filtered.push_back(line);
