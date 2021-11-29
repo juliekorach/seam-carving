@@ -14,7 +14,7 @@ extension:  extension.h extension.cpp
 unit_test: unit_test.h unit_test.cpp
 	 $(CC) -std=c++11 -Wall -o unit_test -c unit_test.cpp
 
-main: helper seam extension main.cpp
+main: helper seam extension unit_test main.cpp
 	$(CC) -std=c++11 -Wall main.cpp helper seam unit_test extension -o main -std=c++11 
 
 profile : main.cpp seam.cpp seam.h 
