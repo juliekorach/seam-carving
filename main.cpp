@@ -44,7 +44,15 @@ int main(int argc, char **argv)
     test_to_gray(in_path);
     test_subimage();
     test_smooth(in_path);
-    // test_sobel(in_path);
+    test_sobel(in_path);
+    test_sobelX_1();
+    test_sobelX_2();
+    test_sobelX_3();
+    test_sobelY_1();
+    test_sobelY_2();
+    test_sobelY_3();
+    test_sobel_1();
+    test_smooth_1();
     // int num_seam(10); /* high value will slow things down */
     // test_hightlight_seam(in_path, num_seam);
     //  test_remove_seam(in_path, num_seam);

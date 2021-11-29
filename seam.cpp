@@ -128,16 +128,18 @@ double convol(const GrayImage &gray, const Kernel &kernel)
     return val;
 }
 
-GrayImage subimage(const GrayImage &gray, long x, long y)
+GrayImage subimage(const GrayImage &gray, long x, long y, int a, int b)
 {
     GrayImage img;
     vector<double> line;
     long max_i(gray.size()-1);
     long max_j(gray[0].size()-1);
-    for (long i(y - 1); i <= y + 1; ++i)
+    long shiftx((a-1)/2);
+    long shifty((b-1)/2);
+    for (long i(y - shifty); i <= y + shifty; ++i)
     {
         line.clear();
-        for (long j(x - 1); j <= x + 1; ++j)
+        for (long j(x - shiftx); j <= x + shiftx; ++j)
         {
             line.push_back(gray[clamp(i, max_i)][clamp(j, max_j)]);
         }
@@ -152,13 +154,14 @@ GrayImage filter(const GrayImage &gray, const Kernel &kernel)
     vector<double> line;
     long max_i(gray.size());
     long max_j(gray[0].size());
+    
     for (long i(0); i < max_i; ++i)
     {
         line.clear();
         for (long j(0); j < max_j; ++j)
         {
-            GrayImage imageounette = subimage(gray, j, i);
-            double val = convol(imageounette, kernel);
+            GrayImage smallimage = subimage(gray, j, i, kernel.size(), kernel[0].size());
+            double val = convol(smallimage, kernel);
 
             line.push_back(val);
         }
