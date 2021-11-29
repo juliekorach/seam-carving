@@ -132,10 +132,10 @@ GrayImage subimage(const GrayImage &gray, long x, long y, int a, int b)
 {
     GrayImage img;
     vector<double> line;
-    long max_i(gray.size()-1);
-    long max_j(gray[0].size()-1);
-    long shiftx((a-1)/2);
-    long shifty((b-1)/2);
+    long max_i(gray.size() - 1);
+    long max_j(gray[0].size() - 1);
+    long shiftx((a - 1) / 2);
+    long shifty((b - 1) / 2);
     for (long i(y - shifty); i <= y + shifty; ++i)
     {
         line.clear();
@@ -154,7 +154,7 @@ GrayImage filter(const GrayImage &gray, const Kernel &kernel)
     vector<double> line;
     long max_i(gray.size());
     long max_j(gray[0].size());
-    
+
     for (long i(0); i < max_i; ++i)
     {
         line.clear();
@@ -211,7 +211,7 @@ GrayImage sobel(const GrayImage &gray)
     {
         for (size_t j(0); j < gray[0].size(); ++j)
         {
-            mag[i][j] = sqrt(pow(imgx[i][j], 2) + pow(imgy[i][j], 2));
+            mag[i][j] = sqrt((imgx[i][j] * imgx[i][j]) + (imgy[i][j] * imgy[i][j]));
         }
     }
     return mag;
