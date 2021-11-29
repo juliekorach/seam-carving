@@ -587,6 +587,8 @@ void test_find_seam_1()
 
 void run_unit_tests()
 {
+    test_superimage();
+    test_filter();
     test_color();
     test_to_gray_2_2();
     test_to_gray_3_3();
@@ -641,4 +643,57 @@ void test_subimage()
                     {0.92, 0.3, 0.3},
                     {0.92, 0.3, 0.3}};
     check_equal(computed_img, expected_img);
+}
+
+void test_superimage()
+{
+    GrayImage gray = {{0.0, 0.1, 0.2, 0.3},
+                      {0.5, 0.3, 0.4, 0.3},
+                      {0.8, 0.7, 0.6, 1.0},
+                      {0.9, 0.91, 0.92, 0.3}};
+
+    GrayImage computed_img;
+    GrayImage expected_img;
+
+    print_header("test_superimage");
+    // Top right corner
+    computed_img = superimage(gray, 1, 1);
+    expected_img = {{0.0, 0.0, 0.1, 0.2, 0.3, 0.3},
+                    {0.0, 0.0, 0.1, 0.2, 0.3, 0.3},
+                    {0.5, 0.5, 0.3, 0.4, 0.3, 0.3},
+                    {0.8, 0.8, 0.7, 0.6, 1.0, 1.0},
+                    {0.9, 0.9, 0.91, 0.92, 0.3, 0.3},
+                    {0.9, 0.9, 0.91, 0.92, 0.3, 0.3}};
+    check_equal(expected_img, computed_img);
+
+    GrayImage gray2 = {{0.1, 0.2, 0.3},
+                       {0.5, 0.3, 0.4}};
+
+    GrayImage computed_img2 = superimage(gray2, 2, 3);
+
+    GrayImage expected2;
+    expected2 = {
+        {0.1, 0.1, 0.1, 0.2, 0.3, 0.3, 0.3},
+        {0.1, 0.1, 0.1, 0.2, 0.3, 0.3, 0.3},
+        {0.1, 0.1, 0.1, 0.2, 0.3, 0.3, 0.3},
+        {0.1, 0.1, 0.1, 0.2, 0.3, 0.3, 0.3},
+        {0.5, 0.5, 0.5, 0.3, 0.4, 0.4, 0.4},
+        {0.5, 0.5, 0.5, 0.3, 0.4, 0.4, 0.4},
+        {0.5, 0.5, 0.5, 0.3, 0.4, 0.4, 0.4},
+        {0.5, 0.5, 0.5, 0.3, 0.4, 0.4, 0.4},
+    };
+
+    check_equal(expected2, computed_img2);
+}
+
+void test_filter()
+{
+    GrayImage gray = {{0.0, 0.1, 0.2},
+                      {0.5, 0.3, 0.4}};
+    GrayImage supergray = superimage(gray, 1, 1);
+    Kernel kernel = {{0.0, 0.0, 0.0},
+                     {0.0, 1, 0.0},
+                     {0.0, 0.0, 0.0}};
+    GrayImage filtered(filter(gray, kernel));
+    check_equal(gray, filtered);
 }
