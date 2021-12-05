@@ -219,9 +219,76 @@ GrayImage sobel(const GrayImage &gray)
 // TASK 3: SEAM
 // ************************************
 
+// Return graph id of a pixel of coordinates row,col
+
+inline size_t get_id(size_t row, size_t col, size_t width)
+{
+    return row * width + col;
+}
+
+// Returns successors of any node of the graph
+// Including last row of pixels
+// Excluding the head (and tail) node 
+
+vector<size_t> get_successors(size_t i, size_t j, size_t height, size_t width)
+{
+    size_t next_row(i + 1);
+    vector<size_t> successors;
+    if (next_row >= height)
+    {
+        // Last row of pixels, return id of the graph tail node
+        return {get_id(height, 1, width)};
+    }
+    if (j > 0)
+    {
+        successors.push_back(get_id(next_row, j - 1, width));
+    }
+    successors.push_back(get_id(next_row, j, width));
+    if (j < width - 1)
+    {
+        successors.push_back(get_id(next_row, j + 1, width));
+    }
+    return successors;
+}
+
+// Adds the head node to the graph
+
+void add_head_to_graph(Graph &graph, size_t width)
+{
+    vector<size_t> head_successors(width);
+    for (size_t j(0); j < width; ++j)
+    {
+        head_successors[j] = j;
+    }
+    graph.push_back({head_successors, 0, INF, 0});
+}
+
+// Add the tail node to the graph
+
+void add_tail_to_graph(Graph &graph)
+{
+    graph.push_back({{}, 0, INF, 0});
+}
+
+// Creates a graph from a gray image
+
 Graph create_graph(const GrayImage &gray)
 {
-    return {}; // TODO MODIFY AND COMPLETE
+    Graph graph;
+    size_t height(gray.size());
+    size_t width(gray[0].size());
+
+    for (size_t i(0); i < height; ++i)
+    {
+        for (size_t j(0); j < width; ++j)
+        {
+            Node node = {get_successors(i, j, height, width), gray[i][j], INF, 0};
+            graph.push_back(node);
+        }
+    }
+    add_head_to_graph(graph, width);
+    add_tail_to_graph(graph);
+    return graph;
 }
 
 // Return shortest path from Node from to Node to

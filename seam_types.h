@@ -8,6 +8,8 @@ typedef std::vector<std::vector<double>> GrayImage;
 typedef std::vector<std::vector<double>> Kernel;
 typedef std::vector<size_t> Path;
 
+constexpr double INF(std::numeric_limits <double >::max());
+
 struct Node
 {
     std::vector<size_t> successors;
