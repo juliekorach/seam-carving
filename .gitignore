@@ -42,3 +42,8 @@ helper
 seam
 *.png
 *.exe
+.vscode/settings.json
+extension
+helper
+seam
+unit_test
