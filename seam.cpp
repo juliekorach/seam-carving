@@ -97,22 +97,16 @@ RGBImage to_RGB(const GrayImage &gimage)
 
 // Get a pixel without accessing out of bounds
 // return nearest valid pixel color
-long clamp(long val, long max)
+void clamp(long &val, long max)
 {
     if (val < 0)
     {
         val = 0;
     }
-    if (val > max)
+    else if (val > max)
     {
         val = max;
     }
-    else
-    {
-        val = val;
-    }
-
-    return val;
 }
 
 double convol(const GrayImage &gray, const Kernel &kernel)
@@ -141,7 +135,11 @@ GrayImage subimage(const GrayImage &gray, long x, long y, int a, int b)
         line.clear();
         for (long j(x - shiftx); j <= x + shiftx; ++j)
         {
-            line.push_back(gray[clamp(i, max_i)][clamp(j, max_j)]);
+            long clamp_i(i);
+            long clamp_j(j);
+            clamp(clamp_i, max_i);
+            clamp(clamp_j, max_j);
+            line.push_back(gray[clamp_i][clamp_j]);
         }
         img.push_back(line);
     }
