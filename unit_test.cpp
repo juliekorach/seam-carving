@@ -603,8 +603,8 @@ void run_unit_tests()
     test_smooth_1();
     test_create_graph_1();
     test_create_graph_2();
-    //test_shortest_path_1();
-    //test_shortest_path_2();
+    test_shortest_path_1();
+    test_shortest_path_2();
     //test_find_seam_1();
 }
 

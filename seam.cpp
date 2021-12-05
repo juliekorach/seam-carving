@@ -269,7 +269,7 @@ Graph create_graph(const GrayImage &gray)
     }
 
     vector<size_t> successors;
-    for (int j(0); j < gray[0].size(); ++j)
+    for (size_t j(0); j < gray[0].size(); ++j)
     {
         successors.push_back(j);
     }
@@ -285,8 +285,47 @@ Graph create_graph(const GrayImage &gray)
 // The path does NOT include the from and to Node
 Path shortest_path(Graph &graph, size_t from, size_t to)
 {
+    graph[0].distance_to_target = graph[0].costs;
+    bool modified(true);
+    while (modified)
+    {
+        modified = false;
+        cout << "Modified, recalculating" << endl;
+        for (size_t i(0); i < graph.size(); ++i)
+        {
+            Node v = graph[i];
+            cout << "Evaluating node " << i << endl;
+            for (size_t k(0); k < graph[i].successors.size(); ++k)
+            {
+                Node n(graph[v.successors[k]]);
+                if (n.distance_to_target > (v.distance_to_target + n.costs))
+                {
+                    graph[v.successors[k]].distance_to_target = v.distance_to_target + n.costs;
+                    graph[v.successors[k]].predecessor_to_target = i;
+                    modified = true;
+                }
+            }
+        }
+    }
+    cout << "Constructing reverse path" << endl;
+    size_t node_id = graph.size() - 1;
+    size_t first_node_id = graph.size() - 2;
+    Path inverse_path;
+    inverse_path.push_back(node_id);
+    while (node_id != first_node_id)
+    {
+        node_id = graph[node_id].predecessor_to_target;
+        inverse_path.push_back(node_id);
+    }
+    cout << "Reversing path" << endl;
+    Path path;
+    for (size_t i(inverse_path.size() - 1); i >= 0 and i < inverse_path.size(); --i)
+    {
+        cout << "i=" << i << endl;
+        path.push_back(inverse_path[i]);
+    }
 
-    return {}; // TODO MODIFY AND COMPLETE
+    return path;
 };
 
 Path find_seam(const GrayImage &gray)
