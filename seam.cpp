@@ -7,6 +7,7 @@
 #include "seam.h"
 
 using namespace std;
+constexpr double INF(numeric_limits<double>::max());
 
 // ***********************************
 // TASK 1: COLOR
@@ -97,22 +98,16 @@ RGBImage to_RGB(const GrayImage &gimage)
 
 // Get a pixel without accessing out of bounds
 // return nearest valid pixel color
-long clamp(long val, long max)
+void clamp(long &val, long max)
 {
     if (val < 0)
     {
         val = 0;
     }
-    if (val > max)
+    else if (val > max)
     {
         val = max;
     }
-    else
-    {
-        val = val;
-    }
-
-    return val;
 }
 
 double convol(const GrayImage &gray, const Kernel &kernel)
@@ -141,7 +136,11 @@ GrayImage subimage(const GrayImage &gray, long x, long y, int a, int b)
         line.clear();
         for (long j(x - shiftx); j <= x + shiftx; ++j)
         {
-            line.push_back(gray[clamp(i, max_i)][clamp(j, max_j)]);
+            long clamp_i = i;
+            long clamp_j = j;
+            clamp(clamp_i, max_i);
+            clamp(clamp_j, max_j);
+            line.push_back(gray[clamp_i][clamp_j]);
         }
         img.push_back(line);
     }
@@ -221,9 +220,65 @@ GrayImage sobel(const GrayImage &gray)
 // TASK 3: SEAM
 // ************************************
 
+inline size_t get_id(size_t row, size_t col, size_t width)
+{
+    return (row * width + col);
+}
 Graph create_graph(const GrayImage &gray)
 {
-    return {}; // TODO MODIFY AND COMPLETE
+    Graph graph_im;
+    size_t width(gray[0].size());
+    for (size_t i(0); i < gray.size(); ++i)
+    {
+        for (size_t j(0); j < width; ++j)
+        {
+            vector<size_t> successors;
+
+            if (i == (gray.size() - 1))
+            {
+                successors = {width * gray.size() + 1};
+            }
+            else if (j == 0)
+            {
+                successors = {
+                    get_id(i + 1, j, width),
+                    get_id(i + 1, j + 1, width)};
+            }
+            else if (j == (width - 1))
+            {
+                successors = {
+                    get_id(i + 1, j - 1, width),
+                    get_id(i + 1, j, width)};
+            }
+            else
+            {
+                successors = {
+                    get_id(i + 1, j - 1, width),
+                    get_id(i + 1, j, width),
+                    get_id(i + 1, j + 1, width)};
+            }
+
+            double cost = gray[i][j];
+            Node nodeij = {
+                successors,
+                cost,
+                INF,
+                0};
+            graph_im.push_back(nodeij);
+        }
+    }
+
+    vector<size_t> successors;
+    for (int j(0); j < gray[0].size(); ++j)
+    {
+        successors.push_back(j);
+    }
+    Node firstnode = {successors, 0, INF, 0};
+    Node lastnode = {{}, 0, INF, 0};
+    graph_im.push_back(firstnode);
+    graph_im.push_back(lastnode);
+
+    return graph_im;
 }
 
 // Return shortest path from Node from to Node to

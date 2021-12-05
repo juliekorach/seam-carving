@@ -41,6 +41,7 @@ int main(int argc, char **argv)
     }
 
     // // Uncomment for testing different phases:
+    /*
     test_to_gray(in_path);
     test_subimage();
     test_smooth(in_path);
@@ -53,6 +54,9 @@ int main(int argc, char **argv)
     test_sobelY_3();
     test_sobel_1();
     test_smooth_1();
+    */
+   
+    run_unit_tests();
     // int num_seam(10); /* high value will slow things down */
     // test_hightlight_seam(in_path, num_seam);
     //  test_remove_seam(in_path, num_seam);
