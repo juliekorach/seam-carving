@@ -31,19 +31,11 @@
 *.out
 *.app
 
-seam.exe
-main.exe
 main
 seam
 unit_test
 helper
-helper.exe
-helper
-seam
-*.png
-*.exe
-.vscode/settings.json
 extension
-helper
-seam
-unit_test
+
+*.png
+.vscode/settings.json
