@@ -293,30 +293,34 @@ Path shortest_path(Graph &graph, size_t from, size_t to)
         cout << "Modified, recalculating" << endl;
         for (size_t i(0); i < graph.size(); ++i)
         {
-            Node v = graph[i];
+
             cout << "Evaluating node " << i << endl;
             for (size_t k(0); k < graph[i].successors.size(); ++k)
             {
-                Node n(graph[v.successors[k]]);
-                if (n.distance_to_target > (v.distance_to_target + n.costs))
+                size_t n(graph[i].successors[k]);
+                if (graph[n].distance_to_target > (graph[i].distance_to_target + graph[n].costs))
                 {
-                    graph[v.successors[k]].distance_to_target = v.distance_to_target + n.costs;
-                    graph[v.successors[k]].predecessor_to_target = i;
+                    cout << "Predecessor of " << n << " is " << i << endl;
+                    graph[n].distance_to_target = graph[i].distance_to_target + graph[n].costs;
+                    graph[n].predecessor_to_target = i;
                     modified = true;
                 }
             }
         }
     }
     cout << "Constructing reverse path" << endl;
-    size_t node_id = graph.size() - 1;
+    size_t last_node_id = graph.size() - 1;
     size_t first_node_id = graph.size() - 2;
     Path inverse_path;
-    inverse_path.push_back(node_id);
-    while (node_id != first_node_id)
+    inverse_path.push_back(last_node_id);
+    size_t node_id = last_node_id;
+    do
     {
+        cout << " Work on node id " << node_id;
         node_id = graph[node_id].predecessor_to_target;
+        cout << " predecessor = " << node_id << endl;
         inverse_path.push_back(node_id);
-    }
+    } while (node_id != first_node_id);
     cout << "Reversing path" << endl;
     Path path;
     for (size_t i(inverse_path.size() - 1); i >= 0 and i < inverse_path.size(); --i)
