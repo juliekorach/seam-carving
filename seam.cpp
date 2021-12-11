@@ -285,22 +285,20 @@ Graph create_graph(const GrayImage &gray)
 // The path does NOT include the from and to Node
 Path shortest_path(Graph &graph, size_t from, size_t to)
 {
-    graph[0].distance_to_target = graph[0].costs;
+    graph[from].distance_to_target = graph[from].costs;
     bool modified(true);
     while (modified)
     {
         modified = false;
-        cout << "Modified, recalculating" << endl;
+        // cout << "Recalculating" << endl;
         for (size_t i(0); i < graph.size(); ++i)
         {
-
-            cout << "Evaluating node " << i << endl;
+            // cout << "\nEvaluating node " << i << endl;
             for (size_t k(0); k < graph[i].successors.size(); ++k)
             {
                 size_t n(graph[i].successors[k]);
                 if (graph[n].distance_to_target > (graph[i].distance_to_target + graph[n].costs))
                 {
-                    cout << "Predecessor of " << n << " is " << i << endl;
                     graph[n].distance_to_target = graph[i].distance_to_target + graph[n].costs;
                     graph[n].predecessor_to_target = i;
                     modified = true;
@@ -308,27 +306,24 @@ Path shortest_path(Graph &graph, size_t from, size_t to)
             }
         }
     }
-    cout << "Constructing reverse path" << endl;
-    size_t last_node_id = graph.size() - 1;
-    size_t first_node_id = graph.size() - 2;
+
+    // cout << "Constructing reverse path" << endl;
+    // size_t last_node_id = graph.size() - 1;
+    // size_t first_node_id = graph.size() - 2;
     Path inverse_path;
-    inverse_path.push_back(last_node_id);
-    size_t node_id = last_node_id;
-    do
+    size_t node_id = graph[to].predecessor_to_target;
+    // inverse_path.push_back(to);
+    while (node_id != from)
     {
-        cout << " Work on node id " << node_id;
-        node_id = graph[node_id].predecessor_to_target;
-        cout << " predecessor = " << node_id << endl;
         inverse_path.push_back(node_id);
-    } while (node_id != first_node_id);
-    cout << "Reversing path" << endl;
+        node_id = graph[node_id].predecessor_to_target;
+    }
+    // cout << "Reversing path" << endl;
     Path path;
     for (size_t i(inverse_path.size() - 1); i >= 0 and i < inverse_path.size(); --i)
     {
-        cout << "i=" << i << endl;
         path.push_back(inverse_path[i]);
     }
-
     return path;
 };
 
