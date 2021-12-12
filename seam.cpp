@@ -286,6 +286,7 @@ Graph create_graph(const GrayImage &gray)
 Path shortest_path(Graph &graph, size_t from, size_t to)
 {
     graph[from].distance_to_target = graph[from].costs;
+
     bool modified(true);
     while (modified)
     {
@@ -297,10 +298,14 @@ Path shortest_path(Graph &graph, size_t from, size_t to)
             for (size_t k(0); k < graph[i].successors.size(); ++k)
             {
                 size_t n(graph[i].successors[k]);
-                if (graph[n].distance_to_target > (graph[i].distance_to_target + graph[n].costs))
+                // cout << "Distance[" << n << "]=" << graph[n].distance_to_target << endl;
+                // cout << "New Distance=" << graph[i].distance_to_target + graph[n].costs << endl;
+                if (graph[n].distance_to_target > (graph[i].distance_to_target + graph[n].costs + 0.000000001))
                 {
                     graph[n].distance_to_target = graph[i].distance_to_target + graph[n].costs;
                     graph[n].predecessor_to_target = i;
+                    // cout << "Distance[" << n << "]=" << graph[n].distance_to_target << " - ";
+                    // cout << "Predecessor[" << n << "]=" << i << endl;
                     modified = true;
                 }
             }
