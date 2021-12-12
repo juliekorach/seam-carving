@@ -299,10 +299,11 @@ Path shortest_path(Graph &graph, size_t from, size_t to)
             {
                 size_t n(graph[i].successors[k]);
                 // cout << "Distance[" << n << "]=" << graph[n].distance_to_target << endl;
-                // cout << "New Distance=" << graph[i].distance_to_target + graph[n].costs << endl;
-                if (graph[n].distance_to_target > (graph[i].distance_to_target + graph[n].costs + 0.000000001))
+                // cout << "New Distance=" << graph[i].distance_to_target + graph[n].costs << endl
+                double new_distance(graph[i].distance_to_target + graph[n].costs);
+                if (graph[n].distance_to_target > new_distance)
                 {
-                    graph[n].distance_to_target = graph[i].distance_to_target + graph[n].costs;
+                    graph[n].distance_to_target = new_distance;
                     graph[n].predecessor_to_target = i;
                     // cout << "Distance[" << n << "]=" << graph[n].distance_to_target << " - ";
                     // cout << "Predecessor[" << n << "]=" << i << endl;
