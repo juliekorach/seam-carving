@@ -592,7 +592,7 @@ void run_unit_tests()
     test_to_gray_3_3();
     test_to_gray_4_4();
     test_to_gray_5_5();
-    test_subimage();
+    // test_subimage();
     test_sobelX_1();
     test_sobelX_2();
     test_sobelX_3();
