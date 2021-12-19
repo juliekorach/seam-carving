@@ -605,7 +605,7 @@ void run_unit_tests()
     test_create_graph_2();
     test_shortest_path_1();
     test_shortest_path_2();
-    //test_find_seam_1();
+    test_find_seam_1();
 }
 
 void test_subimage()

@@ -333,9 +333,24 @@ Path shortest_path(Graph &graph, size_t from, size_t to)
     return path;
 };
 
+size_t get_col(size_t number, size_t width)
+{
+    size_t col = number % width;
+    return col;
+}
+
 Path find_seam(const GrayImage &gray)
 {
-    return {}; // TODO MODIFY AND COMPLETE
+    Graph graph_image = create_graph(gray);
+    size_t from(gray.size() * gray[0].size());
+    size_t to(gray.size() * gray[0].size() + 1);
+    Path s_path = shortest_path(graph_image, from, to);
+    Path x_coordinates(s_path.size());
+    for (size_t i(0); i < s_path.size(); ++i)
+    {
+        x_coordinates[i] = get_col(s_path[i], gray[0].size());
+    }
+    return x_coordinates;
 }
 
 // ***********************************
