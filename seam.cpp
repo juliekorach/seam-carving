@@ -56,7 +56,7 @@ int get_RGB(double gray)
     return grayint;
 }
 
-// Converts  RGB image to grayscale double image.
+
 GrayImage to_gray(const RGBImage &cimage)
 {
     GrayImage gray;
@@ -71,10 +71,10 @@ GrayImage to_gray(const RGBImage &cimage)
         gray.push_back(line);
     }
 
-    return {gray}; // TODO MODIFY AND COMPLETE
+    return gray;
 }
 
-// Converts grayscale double image to an RGB image.
+
 RGBImage to_RGB(const GrayImage &gimage)
 {
     RGBImage color;
@@ -89,15 +89,14 @@ RGBImage to_RGB(const GrayImage &gimage)
         color.push_back(line);
     }
 
-    return {color}; // TODO MODIFY AND COMPLETE
+    return color; 
 }
 
 // ***********************************
 // TASK 2: FILTER
 // ***********************************
 
-// Get a pixel without accessing out of bounds
-// return nearest valid pixel color
+
 void clamp(long &val, long max)
 {
     if (val < 0)
@@ -110,6 +109,7 @@ void clamp(long &val, long max)
     }
 }
 
+//Calcule la valeur de convolution entre un kernel et une image de même taille. Le pixel traité prendra cette valeur.
 double convol(const GrayImage &gray, const Kernel &kernel)
 {
     double val(0);
@@ -123,6 +123,7 @@ double convol(const GrayImage &gray, const Kernel &kernel)
     return val;
 }
 
+//Créé une image de la taille du kernel autour du pixel traité.
 GrayImage subimage(const GrayImage &gray, long x, long y, int a, int b)
 {
     GrayImage img;
@@ -146,6 +147,7 @@ GrayImage subimage(const GrayImage &gray, long x, long y, int a, int b)
     }
     return img;
 }
+
 // Convolve a single-channel image with the given kernel.
 GrayImage filter(const GrayImage &gray, const Kernel &kernel)
 {
@@ -220,10 +222,43 @@ GrayImage sobel(const GrayImage &gray)
 // TASK 3: SEAM
 // ************************************
 
+//Calcule le numero de la node.
 inline size_t get_id(size_t row, size_t col, size_t width)
 {
     return (row * width + col);
 }
+
+//Créé un vector contenant les successors possibles de chaque pixel.
+vector<size_t> get_successors(size_t i, size_t j, size_t width, size_t height)
+{
+    vector<size_t> successors;
+
+    if (i == (height - 1))
+    {
+        successors = {width * height + 1};
+    }
+    else if (j == 0)
+    {
+        successors = {
+            get_id(i + 1, j, width),
+            get_id(i + 1, j + 1, width)};
+    }
+    else if (j == (width - 1))
+    {
+        successors = {
+            get_id(i + 1, j - 1, width),
+            get_id(i + 1, j, width)};
+    }
+    else
+    {
+        successors = {
+            get_id(i + 1, j - 1, width),
+            get_id(i + 1, j, width),
+            get_id(i + 1, j + 1, width)};
+    }
+    return successors;
+}
+
 Graph create_graph(const GrayImage &gray)
 {
     Graph graph_im;
@@ -233,37 +268,9 @@ Graph create_graph(const GrayImage &gray)
         for (size_t j(0); j < width; ++j)
         {
             vector<size_t> successors;
-
-            if (i == (gray.size() - 1))
-            {
-                successors = {width * gray.size() + 1};
-            }
-            else if (j == 0)
-            {
-                successors = {
-                    get_id(i + 1, j, width),
-                    get_id(i + 1, j + 1, width)};
-            }
-            else if (j == (width - 1))
-            {
-                successors = {
-                    get_id(i + 1, j - 1, width),
-                    get_id(i + 1, j, width)};
-            }
-            else
-            {
-                successors = {
-                    get_id(i + 1, j - 1, width),
-                    get_id(i + 1, j, width),
-                    get_id(i + 1, j + 1, width)};
-            }
-
+            successors = get_successors(i, j, width, gray.size());
             double cost = gray[i][j];
-            Node nodeij = {
-                successors,
-                cost,
-                INF,
-                0};
+            Node nodeij = {successors, cost, INF, 0};
             graph_im.push_back(nodeij);
         }
     }
@@ -277,12 +284,9 @@ Graph create_graph(const GrayImage &gray)
     Node lastnode = {{}, 0, INF, 0};
     graph_im.push_back(firstnode);
     graph_im.push_back(lastnode);
-
     return graph_im;
 }
 
-// Return shortest path from Node from to Node to
-// The path does NOT include the from and to Node
 Path shortest_path(Graph &graph, size_t from, size_t to)
 {
     graph[from].distance_to_target = graph[from].costs;
@@ -291,40 +295,29 @@ Path shortest_path(Graph &graph, size_t from, size_t to)
     while (modified)
     {
         modified = false;
-        // cout << "Recalculating" << endl;
         for (size_t i(0); i < graph.size(); ++i)
         {
-            // cout << "\nEvaluating node " << i << endl;
             for (size_t k(0); k < graph[i].successors.size(); ++k)
             {
                 size_t n(graph[i].successors[k]);
-                // cout << "Distance[" << n << "]=" << graph[n].distance_to_target << endl;
-                // cout << "New Distance=" << graph[i].distance_to_target + graph[n].costs << endl
                 double new_distance(graph[i].distance_to_target + graph[n].costs);
                 if (graph[n].distance_to_target > new_distance)
                 {
                     graph[n].distance_to_target = new_distance;
                     graph[n].predecessor_to_target = i;
-                    // cout << "Distance[" << n << "]=" << graph[n].distance_to_target << " - ";
-                    // cout << "Predecessor[" << n << "]=" << i << endl;
                     modified = true;
                 }
             }
         }
     }
 
-    // cout << "Constructing reverse path" << endl;
-    // size_t last_node_id = graph.size() - 1;
-    // size_t first_node_id = graph.size() - 2;
     Path inverse_path;
     size_t node_id = graph[to].predecessor_to_target;
-    // inverse_path.push_back(to);
     while (node_id != from)
     {
         inverse_path.push_back(node_id);
         node_id = graph[node_id].predecessor_to_target;
     }
-    // cout << "Reversing path" << endl;
     Path path;
     for (size_t i(inverse_path.size() - 1); i >= 0 and i < inverse_path.size(); --i)
     {
@@ -333,6 +326,7 @@ Path shortest_path(Graph &graph, size_t from, size_t to)
     return path;
 };
 
+//Calcule la colonne d'une node étant donné son numero.
 size_t get_col(size_t number, size_t width)
 {
     size_t col = number % width;
