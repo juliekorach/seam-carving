@@ -43,52 +43,49 @@ double get_gray(int rgb)
 // Returns the RGB value of the given red, green and blue components.
 int get_RGB(double red, double green, double blue)
 {
-    int rgb;
-    rgb = ((int(red * 255)) << 16) + ((int(green * 255)) << 8) + int(blue * 255);
-    return rgb;
+    return ((int(red * 255)) << 16) + ((int(green * 255)) << 8) + int(blue * 255);
 }
 
 // Returns the RGB components from given grayscale value (between 0.0 and 1.0).
 int get_RGB(double gray)
 {
     int grayint(gray * 255);
-    grayint = (grayint << 16) + (grayint << 8) + grayint;
-    return grayint;
+    return (grayint << 16) + (grayint << 8) + grayint;
 }
-
 
 GrayImage to_gray(const RGBImage &cimage)
 {
     GrayImage gray;
     vector<double> line;
-    for (size_t i(0); i < cimage.size(); ++i)
+    size_t max_i(cimage.size());
+    size_t max_j(cimage[0].size());
+    for (size_t i(0); i < max_i; ++i)
     {
         line.clear();
-        for (size_t j(0); j < cimage[i].size(); ++j)
+        for (size_t j(0); j < max_j; ++j)
         {
             line.push_back(get_gray(cimage[i][j]));
         }
         gray.push_back(line);
     }
-
     return gray;
 }
-
 
 RGBImage to_RGB(const GrayImage &gimage)
 {
     RGBImage color;
     vector<int> line;
-    for (size_t i(0); i < gimage.size(); ++i)
+    size_t max_i(gimage.size());
+    size_t max_j(gimage[0].size());
+    for (size_t i(0); i < max_i; ++i)
     {
         line.clear();
-        for (size_t j(0); j < gimage[i].size(); ++j)
+        for (size_t j(0); j < max_j; ++j)
         {
             line.push_back(get_RGB(gimage[i][j]));
         }
         color.push_back(line);
     }
-
     return color; 
 }
 
@@ -99,53 +96,30 @@ RGBImage to_RGB(const GrayImage &gimage)
 
 void clamp(long &val, long max)
 {
-    if (val < 0)
-    {
-        val = 0;
-    }
-    else if (val > max)
-    {
-        val = max;
-    }
+    val = (val < 0 ? 0 : (val > max ? max : val));
 }
 
-//Calcule la valeur de convolution entre un kernel et une image de même taille. Le pixel traité prendra cette valeur.
-double convol(const GrayImage &gray, const Kernel &kernel)
+//Calcule la valeur de convolution entre un kernel et une portion d'image.
+// Le pixel traité de coordonnees row, col prendra cette valeur.
+double convol(const GrayImage &gray, const Kernel &kernel, const int row, const int col)
 {
     double val(0);
-    for (size_t i(0); i < kernel.size(); ++i)
+    int nb_rows(gray.size()-1);
+    int nb_cols(gray[0].size()-1);
+    int kernel_w(kernel.size());
+    int kernel_h(kernel[0].size());
+    for (size_t i(0); i < kernel_w; ++i)
     {
-        for (size_t j(0); j < kernel[0].size(); ++j)
+        for (size_t j(0); j < kernel_h; ++j)
         {
-            val = val + kernel[i][j] * gray[i][j];
+            long clamp_i(i-kernel_w/2+row);
+            long clamp_j(j-kernel_h/2+col);
+            clamp(clamp_i, nb_rows);
+            clamp(clamp_j, nb_cols);
+            val = val + kernel[i][i] * gray[clamp_i][clamp_j];
         }
     }
     return val;
-}
-
-//Créé une image de la taille du kernel autour du pixel traité.
-GrayImage subimage(const GrayImage &gray, long x, long y, int a, int b)
-{
-    GrayImage img;
-    vector<double> line;
-    long max_i(gray.size() - 1);
-    long max_j(gray[0].size() - 1);
-    long shiftx((a - 1) / 2);
-    long shifty((b - 1) / 2);
-    for (long i(y - shifty); i <= y + shifty; ++i)
-    {
-        line.clear();
-        for (long j(x - shiftx); j <= x + shiftx; ++j)
-        {
-            long clamp_i = i;
-            long clamp_j = j;
-            clamp(clamp_i, max_i);
-            clamp(clamp_j, max_j);
-            line.push_back(gray[clamp_i][clamp_j]);
-        }
-        img.push_back(line);
-    }
-    return img;
 }
 
 // Convolve a single-channel image with the given kernel.
@@ -161,9 +135,8 @@ GrayImage filter(const GrayImage &gray, const Kernel &kernel)
         line.clear();
         for (long j(0); j < max_j; ++j)
         {
-            GrayImage smallimage = subimage(gray, j, i, kernel.size(), kernel[0].size());
-            double val = convol(smallimage, kernel);
-
+            // GrayImage smallimage = subimage(gray, j, i, kernel.size(), kernel[0].size());
+            double val = convol(gray, kernel, i, j);
             line.push_back(val);
         }
         filtered.push_back(line);
